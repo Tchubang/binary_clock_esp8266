@@ -136,6 +136,7 @@ void loop() {
       result_12h -= 7;
       for (int blinkCount = 0; blinkCount < 3; blinkCount++) { // Blink three times
         int minutes = timeClient.getMinutes();
+        int hours = timeClient.getHours();
         display_binary(result_12h, hour_led_pins, sizeof(hour_led_pins) / sizeof(hour_led_pins[0]), true);
         delay(200); // Wait for 200ms (adjust the value as needed)
         display_binary(0, hour_led_pins, sizeof(hour_led_pins) / sizeof(hour_led_pins[0]), true);
