@@ -116,32 +116,49 @@ void setup() {
   server.begin();
 }
 
+int lastMinute = -1;
+
 void loop() {
   timeClient.update();
 
   int hours = timeClient.getHours();
   int minutes = timeClient.getMinutes();
 
-  int result_12h = (hours + 12) % 12; //logic for converting 24 hour format into 12 hour format
+  int result_12h = (hours + 12) % 12; // Logic for converting 24-hour format into 12-hour format
   if (result_12h == 0) {
     result_12h = 12;
   }
 
-  if (result_12h > 7) { // logic for blinking when hour  is greater than 7
-    result_12h -= 7;
-    for (int i = 0; i < 5; i++) {
-      display_binary(result_12h, hour_led_pins, sizeof(hour_led_pins) / sizeof(hour_led_pins[0]), true);
+  // Check for minute change
+  if (minutes != lastMinute) {
+    // Update the LED displays instantly when minutes change
+    if (result_12h > 7) {
+      result_12h -= 7;
+      for (int blinkCount = 0; blinkCount < 3; blinkCount++) { // Blink three times
+        int minutes = timeClient.getMinutes();
+        display_binary(result_12h, hour_led_pins, sizeof(hour_led_pins) / sizeof(hour_led_pins[0]), true);
+        delay(200); // Wait for 200ms (adjust the value as needed)
+        display_binary(0, hour_led_pins, sizeof(hour_led_pins) / sizeof(hour_led_pins[0]), true);
+        delay(200); // Wait for 200ms (adjust the value as needed)
+        blinkCount = 0;
+        display_binary(minutes, minute_led_pins, sizeof(minute_led_pins) / sizeof(minute_led_pins[0]), false);
+      }
+    } else {
+      display_binary(result_12h, hour_led_pins, sizeof(hour_led_pins) / sizeof(hour_led_pins[0]), false);
       display_binary(minutes, minute_led_pins, sizeof(minute_led_pins) / sizeof(minute_led_pins[0]), false);
-      delay(50);
-      display_binary(0, hour_led_pins, sizeof(hour_led_pins) / sizeof(hour_led_pins[0]), true);
     }
-  } else {
-    display_binary(result_12h, hour_led_pins, sizeof(hour_led_pins) / sizeof(hour_led_pins[0]), false);
-    display_binary(minutes, minute_led_pins, sizeof(minute_led_pins) / sizeof(minute_led_pins[0]), false);
+
+    
+
+    lastMinute = minutes; // Update lastMinute to the current minutes value
   }
 
   print_time_to_serial();
 
   server.handleClient();
-  delay(600);
+
+  // Optional delay to control the LED update rate
+  // Adjust this delay as needed to control the overall loop speed
+  delay(200); // 200ms delay between loop iterations (adjust the value as needed)
 }
+
