@@ -95,7 +95,7 @@ void setup() {
   }
   Serial.println();
   Serial.print("Connected to WiFi, IP address: ");
-  Serial.println(WiFi.localIP());
+  Serial.println(WiFi.localIP()); //print esp8266 local ip on serial port.. essential to know for have a access to local web server.
 
   for (int pin : hour_led_pins) {
     pinMode(pin, OUTPUT);
